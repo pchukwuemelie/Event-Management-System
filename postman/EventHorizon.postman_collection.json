@@ -1,0 +1,71 @@
+{
+  "info": {
+    "name": "EventHorizon Auth API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "email", "value": "ada@example.com" },
+    { "key": "password", "value": "Passw0rd123" },
+    { "key": "verifyToken", "value": "" },
+    { "key": "jwt", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/auth/register",
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Ada Lovelace\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}" }
+      }
+    },
+    {
+      "name": "Verify Email",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/verify-email?token={{verifyToken}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "auth", "verify-email"],
+          "query": [{ "key": "token", "value": "{{verifyToken}}" }]
+        }
+      }
+    },
+    {
+      "name": "Resend Verification",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/auth/resend-verification",
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\"\n}" }
+      }
+    },
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["const d = pm.response.json();", "if (d.token) pm.collectionVariables.set('jwt', d.token);"]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/auth/login",
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}" }
+      }
+    },
+    {
+      "name": "Get Profile (protected)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+        "url": "{{baseUrl}}/api/user/profile"
+      }
+    }
+  ]
+}
